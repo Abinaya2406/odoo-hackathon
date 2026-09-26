@@ -60,19 +60,25 @@ export const NotificationsPage = () => {
 
   const filteredNotifs = safeNotifs.filter((n) => {
     if (filterType === 'Unread') return !n.read;
-    if (filterType === 'Critical') return n.type === 'Critical';
-    if (filterType === 'AI Alerts') return n.type === 'AI';
+    if (filterType === 'Critical') return n.type === 'Critical' || String(n.type).includes('Critical');
+    if (filterType === 'AI Alerts') return n.type === 'AI' || String(n.type).includes('Prediction') || String(n.type).includes('Anomaly') || String(n.type).includes('Recommendation');
     return true;
   });
 
   const getNotifIcon = (type) => {
     switch (type) {
       case 'Critical':
+      case 'Critical Stock Prediction':
         return <AlertCircle className="w-5 h-5 text-rose-600" />;
-      case 'Warning':
-        return <AlertTriangle className="w-5 h-5 text-amber-600" />;
+      case 'Inventory Anomaly':
+        return <AlertTriangle className="w-5 h-5 text-rose-600" />;
+      case 'Stockout Prediction':
+        return <Sparkles className="w-5 h-5 text-amber-600" />;
+      case 'AI Recommendation':
       case 'AI':
         return <Sparkles className="w-5 h-5 text-indigo-600" />;
+      case 'Warning':
+        return <AlertTriangle className="w-5 h-5 text-amber-600" />;
       default:
         return <Info className="w-5 h-5 text-blue-600" />;
     }

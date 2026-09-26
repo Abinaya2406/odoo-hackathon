@@ -34,10 +34,13 @@ const StockLedgerPage = lazy(() => import('../pages/inventory/StockLedgerPage').
 
 const DemandForecastPage = lazy(() => import('../pages/ai/DemandForecastPage').then((m) => ({ default: m.DemandForecastPage })));
 const SmartReorderPage = lazy(() => import('../pages/ai/SmartReorderPage').then((m) => ({ default: m.SmartReorderPage })));
-const AnomalyDetectionPage = lazy(() => import('../pages/ai/AnomalyDetectionPage').then((m) => ({ default: m.AnomalyDetectionPage })));
+const AnomalyDetectionPage = lazy(() => import('../pages/ai/AnomalyDetection').then((m) => ({ default: m.AnomalyDetection })));
 const AIRecommendationsPage = lazy(() => import('../pages/ai/AIRecommendationsPage').then((m) => ({ default: m.AIRecommendationsPage })));
+const AICenterPage = lazy(() => import('../pages/ai/AICenter').then((m) => ({ default: m.AICenter })));
+const StockoutPredictionPage = lazy(() => import('../pages/ai/StockoutPrediction').then((m) => ({ default: m.StockoutPrediction })));
+const AIAssistantPage = lazy(() => import('../pages/ai/AIAssistant').then((m) => ({ default: m.AIAssistant })));
 
-const QRScannerPage = lazy(() => import('../pages/scanner/QRScannerPage').then((m) => ({ default: m.QRScannerPage })));
+const ProductScannerPage = lazy(() => import('../pages/scanner/ProductScanner').then((m) => ({ default: m.ProductScanner })));
 
 const WarehouseListPage = lazy(() => import('../pages/warehouse/WarehouseListPage').then((m) => ({ default: m.WarehouseListPage })));
 const WarehouseFormPage = lazy(() => import('../pages/warehouse/WarehouseFormPage').then((m) => ({ default: m.WarehouseFormPage })));
@@ -109,14 +112,17 @@ export const AppRoutes = () => {
         <Route path="/inventory" element={withRouteWrapper(InventoryOverviewPage)} />
         <Route path="/inventory/ledger" element={withRouteWrapper(StockLedgerPage)} />
 
-        {/* AI & Smart */}
+        {/* AI & Intelligence */}
+        <Route path="/ai" element={withRouteWrapper(AICenterPage)} />
+        <Route path="/ai/stockout-prediction" element={withRouteWrapper(StockoutPredictionPage)} />
+        <Route path="/ai/anomalies" element={withRouteWrapper(AnomalyDetectionPage)} />
+        <Route path="/ai/assistant" element={withRouteWrapper(AIAssistantPage)} />
         <Route path="/ai/forecast" element={withRouteWrapper(DemandForecastPage)} />
         <Route path="/ai/reorder" element={withRouteWrapper(SmartReorderPage)} />
-        <Route path="/ai/anomalies" element={withRouteWrapper(AnomalyDetectionPage)} />
         <Route path="/ai/recommendations" element={withRouteWrapper(AIRecommendationsPage)} />
 
-        {/* QR Scanner */}
-        <Route path="/scanner" element={withRouteWrapper(QRScannerPage)} />
+        {/* Scan Product */}
+        <Route path="/scanner" element={withRouteWrapper(ProductScannerPage)} />
 
         {/* Warehouse */}
         <Route path="/warehouse" element={withRouteWrapper(WarehouseListPage)} />

@@ -171,6 +171,13 @@ Vite will start the server:
 ### 3. Open in Browser
 Visit **[http://localhost:3000](http://localhost:3000)** to view and interact with StockSense!
 
+#### 🧠 New AI Innovation Modules Available:
+- **StockSense Intelligence Center**: [`http://localhost:3000/ai`](http://localhost:3000/ai)
+- **QR & Barcode Scanner**: [`http://localhost:3000/scanner`](http://localhost:3000/scanner)
+- **Stockout Date Prediction Engine**: [`http://localhost:3000/ai/stockout-prediction`](http://localhost:3000/ai/stockout-prediction)
+- **AI Inventory Anomaly Detective**: [`http://localhost:3000/ai/anomalies`](http://localhost:3000/ai/anomalies)
+- **Natural-Language Assistant**: [`http://localhost:3000/ai/assistant`](http://localhost:3000/ai/assistant)
+
 ### 4. Production Build (Optional)
 To test or build the optimized production frontend bundle:
 ```bash

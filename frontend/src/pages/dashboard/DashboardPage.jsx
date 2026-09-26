@@ -21,7 +21,10 @@ import {
   TrendingUp,
   Brain,
   ShieldAlert,
-  Boxes
+  Boxes,
+  ScanLine,
+  Flame,
+  Lightbulb
 } from 'lucide-react';
 import {
   AreaChart,
@@ -165,13 +168,20 @@ export const DashboardPage = () => {
               All warehouses operating normally. 4 AI recommendations available for stock rebalancing and emergency reorders.
             </p>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
             <Link
-              to="/ai/forecast"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-blue-700 font-bold text-xs hover:bg-blue-50 transition-colors shadow-sm"
+              to="/scanner"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-blue-700 font-bold text-xs hover:bg-blue-50 transition-colors shadow-sm"
             >
-              <Brain className="w-4 h-4 text-blue-600" />
-              <span>AI Forecast Center</span>
+              <ScanLine className="w-4 h-4 text-blue-600" />
+              <span>Scan Product</span>
+            </Link>
+            <Link
+              to="/ai"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-xs border border-white/20 transition-colors backdrop-blur-md"
+            >
+              <Brain className="w-4 h-4 text-blue-200" />
+              <span>AI Center</span>
             </Link>
           </div>
         </div>
@@ -254,66 +264,138 @@ export const DashboardPage = () => {
       </div>
 
       {/* AI Insights Group */}
-      <div className="bg-gradient-to-r from-blue-50/80 via-indigo-50/50 to-slate-50 border border-blue-200/80 rounded-2xl p-5 shadow-xs">
-        <div className="flex items-center justify-between gap-3 mb-4">
+      <div className="bg-gradient-to-r from-blue-50/90 via-indigo-50/60 to-slate-50 border border-blue-200/90 rounded-3xl p-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-5">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm">
-              <Brain className="w-4 h-4" />
+            <div className="w-9 h-9 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+              <Brain className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                StockSense AI Predictive Insights
-                <span className="text-[10px] bg-blue-600 text-white font-bold px-2 py-0.5 rounded-full">REAL-TIME</span>
+                StockSense AI Insights
+                <span className="text-[10px] bg-blue-600 text-white font-bold px-2 py-0.5 rounded-full">LIVE PREDICTIONS</span>
               </h3>
-              <p className="text-xs text-slate-500">Automated machine learning predictions for demand, reorder, and anomalies</p>
+              <p className="text-xs text-slate-500">Autonomous machine learning risk assessments, anomaly alerts, and optical scanning</p>
             </div>
           </div>
           <Link
-            to="/ai/recommendations"
-            className="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1"
+            to="/ai"
+            className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 bg-white px-3 py-1.5 rounded-xl border border-blue-200 shadow-2xs"
           >
-            <span>View All AI Insights</span>
+            <span>Explore AI Center</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {safeProducts.slice(0, 4).map((item, idx) => {
-            const colors = [
-              { border: 'border-rose-200', bg: 'bg-white', badge: 'red', title: 'Critical Stockout', desc: 'Ball Bearings 6204 at 0 stock. Restock 150 units.', link: '/ai/reorder' },
-              { border: 'border-amber-200', bg: 'bg-white', badge: 'orange', title: 'Demand Spike Surge', desc: '+340% predicted demand for IoT Sensors in 14 days.', link: '/ai/forecast' },
-              { border: 'border-blue-200', bg: 'bg-white', badge: 'blue', title: 'Stock Balance Opp.', desc: 'Transfer 150 boxes from Mumbai Hub to Delhi Depot.', link: '/ai/recommendations' },
-              { border: 'border-indigo-200', bg: 'bg-white', badge: 'purple', title: 'Anomaly Flagged', desc: 'Unusual rapid shift of 45 LiFePO4 batteries on Sep 24.', link: '/ai/anomalies' }
-            ];
-            const cfg = colors[idx % colors.length];
-
-            return (
-              <div
-                key={`ai-card-${idx}`}
-                className={`p-4 rounded-xl border ${cfg.border} ${cfg.bg} shadow-2xs hover:shadow-md transition-all flex flex-col justify-between`}
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                      {cfg.title}
-                    </span>
-                    <Badge status={cfg.badge} size="sm">AI Alert</Badge>
-                  </div>
-                  <p className="text-xs text-slate-600 leading-relaxed mb-3">
-                    {cfg.desc}
-                  </p>
-                </div>
-                <Link
-                  to={cfg.link}
-                  className="inline-flex items-center justify-between text-xs font-semibold text-blue-600 hover:text-blue-700 pt-2 border-t border-slate-100"
-                >
-                  <span>Execute Recommendation</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+          {/* 1. Stockout Warning */}
+          <div className="p-5 rounded-2xl border border-amber-200/80 bg-white shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between gap-2 mb-2.5">
+                <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <Flame className="w-4 h-4 text-amber-600" />
+                  Stockout Warning
+                </span>
+                <Badge status="High-Risk" size="sm">High Risk</Badge>
               </div>
-            );
-          })}
+              <p className="text-sm font-extrabold text-slate-900 mb-1">
+                Steel Rod may run out in 6 days.
+              </p>
+              <p className="text-xs text-slate-500 leading-relaxed mb-4">
+                Accelerated burn rate of 30 kg/day exceeds safety threshold. No purchase receipt scheduled.
+              </p>
+            </div>
+            <Link
+              to="/ai/stockout-prediction?product=SR-001"
+              className="inline-flex items-center justify-between text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 px-3.5 py-2 rounded-xl transition-colors"
+            >
+              <span>View Prediction</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* 2. Anomaly Alert */}
+          <div className="p-5 rounded-2xl border border-rose-200/80 bg-white shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between gap-2 mb-2.5">
+                <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <ShieldAlert className="w-4 h-4 text-rose-600" />
+                  Anomaly Alert
+                </span>
+                <Badge status="Critical" size="sm">Outlier</Badge>
+              </div>
+              <p className="text-sm font-extrabold text-slate-900 mb-1">
+                Unusual 150 kg Steel Rod issue detected.
+              </p>
+              <p className="text-xs text-slate-500 leading-relaxed mb-4">
+                Logged at Main Warehouse by Alex Morgan. +275% spike over normal 10–40 kg threshold.
+              </p>
+            </div>
+            <Link
+              to="/ai/anomalies?product=SR-001"
+              className="inline-flex items-center justify-between text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 px-3.5 py-2 rounded-xl transition-colors"
+            >
+              <span>Review Anomaly</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* 3. AI Recommendation */}
+          <div className="p-5 rounded-2xl border border-blue-200/80 bg-white shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between gap-2 mb-2.5">
+                <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <Lightbulb className="w-4 h-4 text-blue-600" />
+                  AI Recommendation
+                </span>
+                <Badge status="Ready" size="sm">Action</Badge>
+              </div>
+              <p className="text-sm font-extrabold text-slate-900 mb-1">
+                3 products require attention today.
+              </p>
+              <p className="text-xs text-slate-500 leading-relaxed mb-4">
+                Ball Bearings are stocked out; Copper Wire needs reorder; LiFePO4 battery audit pending.
+              </p>
+            </div>
+            <Link
+              to="/ai"
+              className="inline-flex items-center justify-between text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 px-3.5 py-2 rounded-xl transition-colors"
+            >
+              <span>View AI Center</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* 4. Quick Scan */}
+          <div className="p-5 rounded-2xl border border-indigo-200/80 bg-gradient-to-br from-indigo-900 to-slate-900 text-white shadow-md flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between gap-2 mb-2.5">
+                <span className="text-xs font-bold text-indigo-200 flex items-center gap-1.5">
+                  <ScanLine className="w-4 h-4 text-indigo-400" />
+                  Quick Scan
+                </span>
+                <span className="text-[10px] bg-indigo-500/30 text-indigo-200 px-2 py-0.5 rounded-full font-bold">
+                  HANDHELD
+                </span>
+              </div>
+              <p className="text-sm font-extrabold text-white mb-1">
+                Instant Warehouse Identification
+              </p>
+              <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                Scan 1D barcodes or 2D QR codes to execute receipts, deliveries, transfers, or cycle counts.
+              </p>
+            </div>
+            <Link
+              to="/scanner"
+              className="inline-flex items-center justify-between text-xs font-bold text-slate-950 bg-white hover:bg-blue-50 px-3.5 py-2 rounded-xl transition-colors shadow-sm"
+            >
+              <span className="flex items-center gap-1.5">
+                <ScanLine className="w-4 h-4 text-blue-600" />
+                Scan Product
+              </span>
+              <ArrowRight className="w-3.5 h-3.5 text-blue-600" />
+            </Link>
+          </div>
         </div>
       </div>
 

@@ -27,7 +27,10 @@ import {
   FileCheck,
   Truck,
   History,
-  ListFilter
+  ListFilter,
+  Brain,
+  MessageSquareCode,
+  Flame
 } from 'lucide-react';
 
 export const Sidebar = React.memo(() => {
@@ -142,6 +145,10 @@ export const Sidebar = React.memo(() => {
 
           {!isCollapsed && openSubmenu === 'operations' && (
             <div className="mt-1 ml-4 pl-3 border-l-2 border-slate-100 space-y-1 py-1">
+              <NavLink to="/scanner" onClick={closeMobileSidebar} className={subNavItemClass}>
+                <ScanLine className="w-4 h-4 text-blue-600" />
+                <span>Scan Product</span>
+              </NavLink>
               <NavLink to="/operations/receipts" onClick={closeMobileSidebar} className={subNavItemClass}>
                 <FileCheck className="w-4 h-4" />
                 <span>Receipts</span>
@@ -205,7 +212,7 @@ export const Sidebar = React.memo(() => {
           )}
         </div>
 
-        {/* AI & Smart Dropdown */}
+        {/* AI & Intelligence Dropdown */}
         <div>
           <button
             onClick={() => toggleSubmenu('ai')}
@@ -216,8 +223,8 @@ export const Sidebar = React.memo(() => {
             }`}
           >
             <div className="flex items-center gap-3">
-              <Sparkles className="w-5 h-5 shrink-0 text-blue-600" />
-              {!isCollapsed && <span className="flex items-center gap-1.5">AI & Smart <span className="text-[10px] bg-blue-100 text-blue-700 font-bold px-1.5 py-0.2 rounded-full">PRO</span></span>}
+              <Brain className="w-5 h-5 shrink-0 text-blue-600" />
+              {!isCollapsed && <span className="flex items-center gap-1.5">AI & Intelligence <span className="text-[10px] bg-blue-100 text-blue-700 font-bold px-1.5 py-0.2 rounded-full">PRO</span></span>}
             </div>
             {!isCollapsed && (
               <span>
@@ -232,6 +239,22 @@ export const Sidebar = React.memo(() => {
 
           {!isCollapsed && openSubmenu === 'ai' && (
             <div className="mt-1 ml-4 pl-3 border-l-2 border-slate-100 space-y-1 py-1">
+              <NavLink to="/ai" end onClick={closeMobileSidebar} className={subNavItemClass}>
+                <Sparkles className="w-4 h-4 text-blue-600" />
+                <span>AI Center</span>
+              </NavLink>
+              <NavLink to="/ai/stockout-prediction" onClick={closeMobileSidebar} className={subNavItemClass}>
+                <Flame className="w-4 h-4 text-rose-500" />
+                <span>Stockout Prediction</span>
+              </NavLink>
+              <NavLink to="/ai/anomalies" onClick={closeMobileSidebar} className={subNavItemClass}>
+                <AlertTriangle className="w-4 h-4 text-amber-600" />
+                <span>Anomaly Detection</span>
+              </NavLink>
+              <NavLink to="/ai/assistant" onClick={closeMobileSidebar} className={subNavItemClass}>
+                <MessageSquareCode className="w-4 h-4 text-indigo-600" />
+                <span>AI Assistant</span>
+              </NavLink>
               <NavLink to="/ai/forecast" onClick={closeMobileSidebar} className={subNavItemClass}>
                 <TrendingUp className="w-4 h-4 text-blue-600" />
                 <span>Demand Forecast</span>
@@ -239,10 +262,6 @@ export const Sidebar = React.memo(() => {
               <NavLink to="/ai/reorder" onClick={closeMobileSidebar} className={subNavItemClass}>
                 <RefreshCw className="w-4 h-4 text-emerald-600" />
                 <span>Smart Reorder</span>
-              </NavLink>
-              <NavLink to="/ai/anomalies" onClick={closeMobileSidebar} className={subNavItemClass}>
-                <AlertTriangle className="w-4 h-4 text-amber-600" />
-                <span>Anomaly Detection</span>
               </NavLink>
               <NavLink to="/ai/recommendations" onClick={closeMobileSidebar} className={subNavItemClass}>
                 <Lightbulb className="w-4 h-4 text-indigo-600" />
@@ -252,10 +271,10 @@ export const Sidebar = React.memo(() => {
           )}
         </div>
 
-        {/* QR Scanner */}
+        {/* Scan Product Quick Link */}
         <NavLink to="/scanner" onClick={closeMobileSidebar} className={navItemClass}>
-          <ScanLine className="w-5 h-5 shrink-0 text-indigo-600" />
-          {!isCollapsed && <span>QR Scanner UI</span>}
+          <ScanLine className="w-5 h-5 shrink-0 text-blue-600" />
+          {!isCollapsed && <span>Scan Product</span>}
         </NavLink>
 
         {/* Warehouse */}

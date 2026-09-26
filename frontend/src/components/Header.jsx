@@ -80,11 +80,14 @@ export const Header = React.memo(({ title, subtitle }) => {
     if (path === '/operations/move-history') return 'Stock Move Ledger';
     if (path === '/inventory') return 'Inventory Overview';
     if (path === '/inventory/ledger') return 'Stock Movement Timeline';
+    if (path === '/ai') return 'StockSense Intelligence Center';
+    if (path === '/ai/stockout-prediction') return 'Stockout Prediction';
+    if (path === '/ai/assistant') return 'StockSense AI Assistant';
     if (path === '/ai/forecast') return 'AI Demand Forecast';
     if (path === '/ai/reorder') return 'Smart Reorder Recommendations';
-    if (path === '/ai/anomalies') return 'AI Anomaly Detection';
+    if (path === '/ai/anomalies') return 'AI Inventory Anomaly Detection';
     if (path === '/ai/recommendations') return 'Actionable AI Insights';
-    if (path === '/scanner') return 'Barcode & QR Scanner';
+    if (path === '/scanner') return 'Scan Product';
     if (path.startsWith('/warehouse')) return 'Warehouse Management';
     if (path === '/reports') return 'Analytics & Reports';
     if (path === '/notifications') return 'Notification Center';

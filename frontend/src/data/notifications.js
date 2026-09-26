@@ -1,30 +1,48 @@
 export const INITIAL_NOTIFICATIONS = [
   {
+    id: 'notif-pred-1',
+    type: 'Stockout Prediction',
+    title: '🔮 Stockout Prediction',
+    message: 'Steel Rod is predicted to reach critical stock in 6 days based on elevated consumption.',
+    timestamp: '15 mins ago',
+    read: false,
+    actionUrl: '/ai/stockout-prediction?product=SR-001'
+  },
+  {
+    id: 'notif-anom-1',
+    type: 'Inventory Anomaly',
+    title: '🚨 Anomaly Detected',
+    message: 'Unusual stock movement detected for Steel Rod: 150 kg issue logged (+275% above normal pattern).',
+    timestamp: '30 mins ago',
+    read: false,
+    actionUrl: '/ai/anomalies?product=SR-001'
+  },
+  {
+    id: 'notif-pred-2',
+    type: 'Critical Stock Prediction',
+    title: '🔮 Critical Stockout Hazard',
+    message: 'Industrial Copper Wire 2.5mm is estimated to deplete in 4 days. Lead time is 4 days.',
+    timestamp: '1 hour ago',
+    read: false,
+    actionUrl: '/ai/stockout-prediction?product=CW-002'
+  },
+  {
+    id: 'notif-ai-reco',
+    type: 'AI Recommendation',
+    title: '🧠 AI Recommendation',
+    message: '3 products require attention today. Emergency restock advised for Ball Bearings.',
+    timestamp: '2 hours ago',
+    read: false,
+    actionUrl: '/ai'
+  },
+  {
     id: 'notif-1',
     type: 'Critical',
     title: 'Out of Stock Alert',
     message: 'Product "High-Precision Stainless Steel Ball Bearings 6204" (SKU-MECH-4105) has reached 0 stock in Delhi Depot.',
-    timestamp: '10 mins ago',
-    read: false,
+    timestamp: '3 hours ago',
+    read: true,
     actionUrl: '/products/prod-004'
-  },
-  {
-    id: 'notif-2',
-    type: 'AI',
-    title: 'Predicted Demand Spike Detected',
-    message: 'AI Forecast predicts a +340% demand surge for "Smart IoT Temperature Sensors" over the next 14 days due to seasonal cold-chain contracts.',
-    timestamp: '45 mins ago',
-    read: false,
-    actionUrl: '/ai/forecast'
-  },
-  {
-    id: 'notif-3',
-    type: 'Warning',
-    title: 'Low Stock Threshold Reached',
-    message: 'Product "Thermal Transfer Label Rolls" has 85 units remaining (Minimum threshold: 100).',
-    timestamp: '2 hours ago',
-    read: false,
-    actionUrl: '/ai/reorder'
   },
   {
     id: 'notif-4',
@@ -34,14 +52,5 @@ export const INITIAL_NOTIFICATIONS = [
     timestamp: '1 day ago',
     read: true,
     actionUrl: '/operations/receipts'
-  },
-  {
-    id: 'notif-5',
-    type: 'AI',
-    title: 'Inventory Anomaly Flagged',
-    message: 'Unusual rapid depletion of 45 units of LiFePO4 Battery Packs detected outside regular order dispatch hours.',
-    timestamp: '2 days ago',
-    read: true,
-    actionUrl: '/ai/anomalies'
   }
 ];
