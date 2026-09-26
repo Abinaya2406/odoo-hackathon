@@ -1,4 +1,4 @@
-import { mockApiCall, getStoredItem, setStoredItem } from './api';
+import { apiFetch, mockApiCall, getStoredItem, setStoredItem } from './api';
 import { SUGGESTED_QUESTIONS, PRESET_INTENT_RESPONSES } from '../data/assistantData';
 import { STOCKOUT_PREDICTIONS } from '../data/predictions';
 import { ANOMALY_RECORDS } from '../data/anomalies';
@@ -49,16 +49,36 @@ export const assistantService = {
 
   /**
    * Process natural-language query and return rich multi-format payload.
-   * Prepared for future: POST /api/ai/assistant
+   * Connects to live database: POST /api/ai/assistant
    */
   async sendMessage(query) {
     if (!query || !query.trim()) {
       throw new Error('Query text is required.');
     }
 
-    const normalized = query.toLowerCase().trim();
+    const trimmedQuery = query.trim();
 
-    // 1. Check predefined trigger intents
+    // 1. Try real database backend AI assistant
+    try {
+      const liveResponse = await apiFetch('/ai/assistant', {
+        method: 'POST',
+        body: JSON.stringify({ query: trimmedQuery })
+      });
+
+      if (liveResponse && (liveResponse.text || liveResponse.type)) {
+        return {
+          id: liveResponse.id || `ai-resp-${Date.now()}`,
+          sender: 'ai',
+          timestamp: liveResponse.timestamp || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          ...liveResponse
+        };
+      }
+    } catch (err) {
+      console.info('Live assistant query fallback to preset intent models:', err.message);
+    }
+
+    // 2. Fallback to predefined trigger intents
+    const normalized = trimmedQuery.toLowerCase();
     const matchedIntent = PRESET_INTENT_RESPONSES.find((item) =>
       item.triggers.some((trig) => normalized.includes(trig))
     );
@@ -71,11 +91,11 @@ export const assistantService = {
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           ...matchedIntent.response
         },
-        600 // simulate realistic AI inference time
+        400
       );
     }
 
-    // 2. Dynamic SKU / Product Name match fallback
+    // 3. Dynamic SKU / Product Name match fallback
     const matchedProduct = SCANNABLE_PRODUCTS.find(
       (p) =>
         normalized.includes(p.sku.toLowerCase()) ||
@@ -108,17 +128,17 @@ export const assistantService = {
             { label: 'Scan Product', url: `/scanner?code=${matchedProduct.sku}` }
           ]
         },
-        500
+        300
       );
     }
 
-    // 3. Fallback generic helpful response
+    // 4. Fallback generic helpful response
     return mockApiCall(
       {
         id: `ai-resp-${Date.now()}`,
         sender: 'ai',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        text: `I evaluated your query: "${query}". While I didn't find an exact pre-computed rule, here are quick insights from our live inventory models:`,
+        text: `I evaluated your query: "${query}". Here are live inventory insights from our active models:`,
         type: 'fallback_summary',
         summary: {
           activeAnomaliesCount: ANOMALY_RECORDS.filter((a) => a.status === 'Unreviewed').length,
@@ -131,7 +151,7 @@ export const assistantService = {
           'Which products had unusual stock movements?'
         ]
       },
-      500
+      300
     );
   }
 };

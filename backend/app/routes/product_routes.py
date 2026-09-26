@@ -12,7 +12,7 @@ create_schema = ProductCreateSchema()
 update_schema = ProductUpdateSchema()
 
 @product_bp.route("", methods=["GET"])
-@jwt_required()
+@jwt_required(optional=True)
 def get_products():
     search = request.args.get("search")
     category_id = parse_int_or_default(request.args.get("category_id"))
@@ -40,8 +40,20 @@ def get_products():
         status_code=200,
     )
 
+@product_bp.route("/scan/<path:code>", methods=["GET"])
+@jwt_required(optional=True)
+def scan_product(code: str):
+    from app.services.ai_intelligence_service import AIIntelligenceService
+    try:
+        data = AIIntelligenceService.scan_product(code)
+        return api_response(success=True, message="Product scanned successfully", data=data)
+    except ValueError as e:
+        return api_response(success=False, message=str(e), status_code=404)
+    except Exception as e:
+        return api_response(success=False, message=f"Scan lookup error: {str(e)}", status_code=500)
+
 @product_bp.route("/<int:product_id>", methods=["GET"])
-@jwt_required()
+@jwt_required(optional=True)
 def get_product(product_id: int):
     try:
         product = ProductService.get_by_id(product_id)

@@ -1,16 +1,42 @@
-import { mockApiCall, getStoredItem, setStoredItem } from './api';
+import { apiFetch, mockApiCall, getStoredItem, setStoredItem } from './api';
 import { STOCKOUT_PREDICTIONS, PREDICTION_KPIS } from '../data/predictions';
 
 const PREDICTIONS_STORAGE_KEY = 'ai_stockout_predictions';
+const PREDICTIONS_KPIS_KEY = 'ai_stockout_kpis';
 
 export const predictionService = {
   /**
-   * Fetch all stockout predictions.
-   * Prepared for future: GET /api/ai/stockout-predictions
+   * Fetch all stockout predictions from live database.
+   * Route: GET /api/ai/stockout-predictions
    */
   async getStockoutPredictions(filters = {}) {
-    const list = getStoredItem(PREDICTIONS_STORAGE_KEY, STOCKOUT_PREDICTIONS);
+    const params = new URLSearchParams();
+    if (filters.riskLevel && filters.riskLevel !== 'All') {
+      params.append('riskLevel', filters.riskLevel);
+    }
+    if (filters.search) {
+      params.append('search', filters.search);
+    }
 
+    const queryStr = params.toString() ? `?${params.toString()}` : '';
+
+    // 1. Try real database backend
+    try {
+      const data = await apiFetch(`/ai/stockout-predictions${queryStr}`);
+      const items = Array.isArray(data) ? data : (data.items || []);
+      if (data.kpis) {
+        setStoredItem(PREDICTIONS_KPIS_KEY, data.kpis);
+      }
+      if (items.length > 0) {
+        setStoredItem(PREDICTIONS_STORAGE_KEY, items);
+        return items;
+      }
+    } catch (err) {
+      console.info('Stockout predictions fallback to cached/mock data:', err.message);
+    }
+
+    // 2. Fallback to cached or mock data
+    const list = getStoredItem(PREDICTIONS_STORAGE_KEY, STOCKOUT_PREDICTIONS);
     let filtered = [...list];
 
     if (filters.riskLevel && filters.riskLevel !== 'All') {
@@ -29,7 +55,7 @@ export const predictionService = {
       );
     }
 
-    return mockApiCall(filtered, 250);
+    return mockApiCall(filtered, 150);
   },
 
   /**
@@ -40,18 +66,45 @@ export const predictionService = {
     const item = list.find(
       (p) => p.id === identifier || p.sku.toLowerCase() === String(identifier).toLowerCase()
     );
-    if (!item) {
-      throw new Error(`Stockout prediction not found for: ${identifier}`);
+    if (item) {
+      return mockApiCall(item, 100);
     }
-    return mockApiCall(item, 150);
+
+    // Attempt lookup from server
+    try {
+      const liveData = await apiFetch(`/ai/stockout-predictions?search=${encodeURIComponent(identifier)}`);
+      const items = Array.isArray(liveData) ? liveData : (liveData.items || []);
+      const matched = items.find(
+        (p) => p.id === identifier || p.sku.toLowerCase() === String(identifier).toLowerCase()
+      );
+      if (matched) return matched;
+    } catch {
+      // Fallback
+    }
+
+    throw new Error(`Stockout prediction not found for: ${identifier}`);
   },
 
   /**
-   * Calculate and return current dashboard KPIs
+   * Return current dashboard KPIs
    */
   async getPredictionKPIs() {
-    const list = getStoredItem(PREDICTIONS_STORAGE_KEY, STOCKOUT_PREDICTIONS);
+    // 1. Try real database backend
+    try {
+      const data = await apiFetch('/ai/stockout-predictions');
+      if (data && data.kpis) {
+        setStoredItem(PREDICTIONS_KPIS_KEY, data.kpis);
+        return data.kpis;
+      }
+    } catch (err) {
+      console.info('Stockout KPIs fallback to cached computation:', err.message);
+    }
 
+    // 2. Fallback to cached/calculated KPIs
+    const cachedKpis = getStoredItem(PREDICTIONS_KPIS_KEY, null);
+    if (cachedKpis) return cachedKpis;
+
+    const list = getStoredItem(PREDICTIONS_STORAGE_KEY, STOCKOUT_PREDICTIONS);
     const productsAtRisk = list.filter((p) => ['Critical', 'High', 'Medium'].includes(p.riskLevel)).length;
     const stockoutsPredicted = list.filter((p) => p.predictedStockoutDays <= 7).length;
     const criticalProducts = list.filter((p) => p.riskLevel === 'Critical' || p.currentStock === 0).length;
@@ -68,6 +121,6 @@ export const predictionService = {
       avgDaysToStockout: parseFloat(avgDays) || PREDICTION_KPIS.avgDaysToStockout
     };
 
-    return mockApiCall(kpis, 150);
+    return mockApiCall(kpis, 100);
   }
 };

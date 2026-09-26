@@ -119,6 +119,12 @@ python app.py init-db
 # or: flask init-db
 ```
 
+### 2.1 Seed Database with Realistic Inventory & AI Telemetry
+Populate all warehouses (CDC Bengaluru, West Hub Mumbai, North Depot Delhi), product catalog, stock balances, and 70+ historical stock movements:
+```bash
+python seed_db.py
+```
+
 ### 3. Start Backend Server
 ```bash
 python app.py
